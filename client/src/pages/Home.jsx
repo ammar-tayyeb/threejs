@@ -23,13 +23,12 @@ const Home = () => {
         <motion.div className="home-content" {...headContainerAnimation}>
           <motion.div className="home-content-text" {...headTextAnimation}>
             <h1 className='head-text'>
-              LET'S <br className='xl:block hidden'/> DO IT
+              3D <br className='xl:block hidden'/> T-Shirt App
             </h1>
           </motion.div >
           <motion.div className='flex flex-col gap-5 ' {...headContentAnimation} >
             <p className='max-w-md font-normal text-gray-600 text-base'>
               Create your own t shirt design
-              with our brand new customization tool
             </p>
             <CustomButton
               type = 'primary' tittle = 'customize it'

@@ -20,7 +20,7 @@ html {
 }
 
 .home {
-  @apply w-fit xl:h-full flex xl:justify-between justify-start items-start flex-col xl:py-8 xl:px-36 sm:p-8 p-6 max-xl:gap-7 absolute z-10;
+  @apply w-full xl:h-full flex flex-col justify-start items-start gap-7 p-6 sm:p-8 xl:px-36 xl:py-8 absolute z-10;
 }
 
 .home-content {
@@ -28,7 +28,7 @@ html {
 }
 
 .head-text {
-  @apply xl:text-[10rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black text-black;
+  @apply xl:text-[10rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black text-gray-300;
 }
 
 .download-btn {
@@ -36,11 +36,45 @@ html {
 }
 
 .editortabs-container {
-  @apply glassmorphism w-16 border-[2px] rounded-lg flex flex-col justify-center items-center ml-1 py-4 gap-4;
+  @apply glassmorphism w-full max-w-md border-[2px] rounded-lg flex flex-col justify-start items-stretch gap-4 p-3;
 }
 
 .filtertabs-container {
-  @apply absolute z-10 bottom-5 right-0 left-0 w-full flex justify-center items-center flex-wrap gap-4;
+  @apply relative z-10 w-full flex flex-col items-center gap-4 p-3;
+}
+
+.side-controls {
+  @apply relative z-10 glassmorphism p-3 w-full rounded-md flex flex-col gap-3 mt-4;
+}
+
+.right-side {
+  @apply mt-4;
+}
+
+.bottom-controls {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  @apply mx-4 z-50 flex flex-col items-center gap-2 pt-3;
+}
+
+@screen xl {
+  .editortabs-container {
+    @apply w-16 flex-col justify-center items-center ml-1 py-4;
+  }
+
+  .filtertabs-container {
+    @apply absolute bottom-5 right-0 left-0 w-full flex-row justify-center items-center;
+  }
+
+  .side-controls {
+    @apply absolute top-1/2 -translate-y-1/2 w-40;
+  }
+
+  .right-side {
+    @apply right-4 mt-0;
+  }
 }
 
 .aipicker-container {

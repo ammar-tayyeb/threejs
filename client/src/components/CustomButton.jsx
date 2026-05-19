@@ -2,25 +2,29 @@ import { color } from 'framer-motion'
 import React from 'react'
 import state from '../store'
 import { useSnapshot } from 'valtio'
-const CostumeButton = ({CustomStyles , type , handleClick, tittle}) => {
-const snap = useSnapshot(state)
+
+const CustomButton = ({ customStyles = '', type, handleClick, tittle, children }) => {
+  const snap = useSnapshot(state)
   const generateStyle = (type) => {
-  switch (type) {
-    case 'primary':
-      return { backgroundColor: snap.color , color: 'white' }
-    case'secondary':
-      return { backgroundColor: '#000', color: '#fff' }
-    default:
-      return {}
+    switch (type) {
+      case 'primary':
+        return { backgroundColor: snap.color, color: 'white' }
+      case 'secondary':
+        return { backgroundColor: '#000', color: '#fff' }
+      default:
+        return {}
+    }
   }
 
-}
   return (
-    <button className={`px-2 py-1.5 flex-1 rounded-md ${CustomStyles}`}
+    <button
+      className={`px-2 py-1.5 flex-1 rounded-md ${customStyles}`}
       onClick={handleClick}
       style={generateStyle(type)}
-    > {tittle} </button>
+    >
+      {children ? children : tittle}
+    </button>
   )
 }
 
-export default CostumeButton
+export default CustomButton

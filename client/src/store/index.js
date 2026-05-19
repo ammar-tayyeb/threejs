@@ -9,6 +9,6 @@ const state = proxy({
   logoDecal : './threejs.png',
   fullDecal : './threejs.png',
   decalSize : 15,
-  decalPosition :4,
+  decalPosition : 0,
 });
 export default state ;

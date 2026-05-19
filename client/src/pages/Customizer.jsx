@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSnapshot } from 'valtio';
 
@@ -8,19 +8,25 @@ import { download } from '../assets';
 import { downloadCanvasToImage, reader } from '../config/helpers';
 import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants';
 import { fadeAnimation, slideAnimation } from '../config/motion';
-import { AiPicker, ColorPicker, CustomButton, FilePicker, Tab } from '../components';
+import { CustomButton, FilePicker, Tab } from '../components';
 const Customizer = () => {
   const snap = useSnapshot(state);
-  const [decalSize, setDecalSize] = useState(0.25);
-  const handleInputChange = (event) => {
-    setDecalSize(event.target.value);
 
-  };
+  const positionOptions = [
+    { label: 'Top', value: 7 },
+    { label: 'Center', value: 0 },
+    { label: 'Bottom', value: -10 },
+  ];
+
+  const sizeOptions = [
+    { label: 'Small', value: 15 },
+    { label: 'Medium', value: 25 },
+    { label: 'Large', value: 35 },
+  ];
 
   const [file, setFile] = useState('');
 
-  const [prompt, setPrompt] = useState('');
-  const [generatingImg, setGeneratingImg] = useState(false);
+  
 
   const [activeEditorTab, setActiveEditorTab] = useState("");
   const [activeFilterTab, setActiveFilterTab] = useState({
@@ -30,53 +36,19 @@ const Customizer = () => {
 
   // show tab content depending on the activeTab
   const generateTabContent = () => {
-    switch (activeEditorTab) {
-      case "colorpicker":
-        return <ColorPicker />
-      case "filepicker":
-        return <FilePicker
+    if (activeEditorTab === "filepicker") {
+      return (
+        <FilePicker
           file={file}
           setFile={setFile}
           readFile={readFile}
         />
-      case "aipicker":
-        return <AiPicker
-          prompt={prompt}
-          setPrompt={setPrompt}
-          generatingImg={generatingImg}
-          handleSubmit={handleSubmit}
-        />
-      default:
-        return null;
+      )
     }
+    return null;
   }
 
-  const handleSubmit = async (type) => {
-    if(!prompt) return alert("Please enter a prompt");
-
-    try {
-      setGeneratingImg(true);
-
-      const response = await fetch('http://localhost:8080/api/v1/dalle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt,
-        })
-      })
-
-      const data = await response.json();
-
-      handleDecals(type, `data:image/png;base64,${data.photo}`)
-    } catch (error) {
-      alert(error)
-    } finally {
-      setGeneratingImg(false);
-      setActiveEditorTab("");
-    }
-  }
+  
 
   const handleDecals = (type, result) => {
     const decalType = DecalTypes[type];
@@ -111,6 +83,14 @@ const Customizer = () => {
       }
     })
   }
+
+  const handlePositionChange = (value) => {
+    state.decalPosition = value;
+  };
+
+  const handleSizeChange = (value) => {
+    state.decalSize = value;
+  };
 
   const readFile = (type) => {
     reader(file)
@@ -154,6 +134,19 @@ const Customizer = () => {
               handleClick={() => state.intro = true}
               customStyles="w-fit px-4 py-2.5 font-bold text-sm"
             />
+            <div className="mt-2">
+              <CustomButton
+                type="primary"
+                handleClick={downloadCanvasToImage}
+                customStyles="w-fit px-3 py-2 rounded-md shadow-md"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </CustomButton>
+            </div>
           </motion.div>
 
           <motion.div
@@ -169,23 +162,58 @@ const Customizer = () => {
                 handleClick={() => handleActiveFilterTab(tab.name)}
               />
             ))}
-            <label htmlFor="size" className='text-white font-bold'>Logo Size</label>
-            <input type="range"
-              min={15}
-              max={40}
-              value={snap.decalSize}
-              onChange={(e) => state.decalSize = e.target.value }
-            id = 'size'
-            />
 
-            <input type="range"
-              min={-15}
-              max={7}
-              value={snap.decalPosition}
-              onChange={(e) => state.decalPosition = e.target.value }
-              className=''
-              />
+            <div className='bottom-controls'>
+              <div className='w-full flex flex-col items-center gap-3'>
+                <div className='flex flex-col items-center gap-2'>
+                  <label className='text-white font-bold'>Logo Size</label>
+                  <div className='flex flex-wrap justify-center gap-2'>
+                    {sizeOptions.map((option) => (
+                      <button
+                        type='button'
+                        key={option.label}
+                        className={`px-3 py-2 rounded-md text-sm font-semibold ${snap.decalSize === option.value ? 'bg-white text-black' : 'bg-slate-700 text-white'}`}
+                        onClick={() => handleSizeChange(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
+                <div className='xl:hidden flex flex-col items-center gap-2'>
+                  <label className='text-white font-bold'>Logo Position</label>
+                  <div className='flex flex-wrap justify-center gap-2'>
+                    {positionOptions.map((option) => (
+                      <button
+                        type='button'
+                        key={option.label}
+                        className={`px-3 py-2 rounded-md text-sm font-semibold ${snap.decalPosition === option.value ? 'bg-white text-black' : 'bg-slate-700 text-white'}`}
+                        onClick={() => handlePositionChange(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div className='side-controls right-side hidden xl:flex' {...fadeAnimation}>
+            <label className='text-white font-bold'>Logo Position</label>
+            <div className='flex flex-col gap-2'>
+              {positionOptions.map((option) => (
+                <button
+                  type='button'
+                  key={option.label}
+                  className={`px-3 py-2 rounded-md text-sm font-semibold ${snap.decalPosition === option.value ? 'bg-white text-black' : 'bg-slate-700 text-white'}`}
+                  onClick={() => handlePositionChange(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </motion.div>
         </>
       )}
